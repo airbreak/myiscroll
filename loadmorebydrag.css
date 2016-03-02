@@ -23,6 +23,7 @@
   width: 100%;
   background-color: #fafafa;
   z-index: 10;
+  -webkit-transform: translate3d(0, 0, 0);
 }
 #wrapper .news-lists .item {
   height: 40px;
@@ -39,6 +40,9 @@
   font-weight: bold;
   font-size: 14px;
   color: #888;
+  text-aling: center;
+  position: absolute;
+  width: 100%;
 }
 #wrapper #pullDown .loading,
 #wrapper #pullUp .loading {
@@ -50,28 +54,38 @@
   -webkit-animation-iteration-count: infinite;
   -webkit-animation-timing-function: linear;
 }
+#wrapper #pullDown {
+  top: -40px;
+}
+#wrapper #pullUp {
+  bottom: -40px;
+}
 #wrapper .icon {
   display: block;
   float: left;
   width: 40px;
   height: 40px;
   background: url('pull-icon@2x.png') 0 0 no-repeat;
-  -webkit-background-size: 40px 80px;
   background-size: 40px 80px;
-  -webkit-transition-property: -webkit-transform;
-  -webkit-transition-duration: 250ms;
 }
-#wrapper .icon.pullDownIcon {
+#wrapper .icon.pullDownIcon.normal {
   -webkit-transform: rotate(0deg) translateZ(0);
 }
 #wrapper .icon.pullDownIcon.flip {
-  -webkit-transform: rotate(0deg) translateZ(0) !important;
+  -webkit-transform: rotate(-180deg) translateZ(0);
 }
-#wrapper .icon.pullUpIcon {
-  -webkit-transform: rotate(-180deg) translateZ(0) !important;
+#wrapper .icon.pullDownIcon.loading {
+  background-position: 0 100%;
+}
+#wrapper .icon.pullUpIcon.normal {
+  -webkit-transform: rotate(-180deg) translateZ(0);
 }
 #wrapper .icon.pullUpIcon.flip {
   -webkit-transform: rotate(0deg) translateZ(0);
+}
+#wrapper .icon.pullUpIcon.loading {
+  background-position: 0 100%;
+  -webkit-animation: loading 5s inifition linear;
 }
 @-webkit-keyframes loading {
   from {

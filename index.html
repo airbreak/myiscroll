@@ -15,8 +15,8 @@
     <div id="wrapper">
         <div id="scroller">
             <div id="pullDown">
-                <span class="pullDownIcon icon"></span>
-                <span class="pullDownLable">下拉刷新</span>
+                <span class="pullDownIcon icon normal"></span>
+                <span class="pullDownLabel">下拉刷新</span>
             </div>
             <div class="news-lists" id="news-list">
                 <div class="item">根据市场奖惩制度，结合市场各部门提供的数据</div>
@@ -33,10 +33,24 @@
                 <div class="item">根据市场奖惩制度，结合市场各部门提供的数据</div>
                 <div class="item">根据市场奖惩制度，结合市场各部门提供的数据</div>
                 <div class="item">根据市场奖惩制度，结合市场各部门提供的数据</div>
+                <div class="item">根据市场奖惩制度，结合市场各部门提供的数据</div>
+                <div class="item">根据市场奖惩制度，结合市场各部门提供的数据</div>
+                <div class="item">根据市场奖惩制度，结合市场各部门提供的数据</div>
+                <div class="item">根据市场奖惩制度，结合市场各部门提供的数据</div>
+                <div class="item">根据市场奖惩制度，结合市场各部门提供的数据</div>
+                <div class="item">根据市场奖惩制度，结合市场各部门提供的数据</div>
+                <div class="item">根据市场奖惩制度，结合市场各部门提供的数据</div>
+                <div class="item">根据市场奖惩制度，结合市场各部门提供的数据</div>
+                <div class="item">根据市场奖惩制度，结合市场各部门提供的数据</div>
+                <div class="item">根据市场奖惩制度，结合市场各部门提供的数据</div>
+                <div class="item">根据市场奖惩制度，结合市场各部门提供的数据</div>
+                <div class="item">根据市场奖惩制度，结合市场各部门提供的数据</div>
+                <div class="item">根据市场奖惩制度，结合市场各部门提供的数据</div>
+                <div class="item">根据市场奖惩制度，结合市场各部门提供的数据</div>
             </div>
             <div id="pullUp">
-                <span class="pullUpIcon icon"></span>
-                <span class="pullUpLabel">上拉加载更多……</span>
+                <span class="pullUpIcon icon normal"></span>
+                <span class="pullUpLabel">上拉加载更多</span>
             </div>
         </div>
     </div>
@@ -52,12 +66,15 @@
         pullDownEl,pullDownOffset,
         pullUpEl,pullUpOffset,
         generatedCount=0;
+        var $down,$up;
     function pullDownAction(){
         $.getJSON('test.json',function(data,state){
            if(data && data.state==1 && state=='success'){
                 setTimeout(function(){
-                    $('#news-lists').before(data.data);
-                    myScroll.refresh();
+                    $('#news-list').html(data.data);
+                     myScroll.refresh();
+                     $downIcon.removeClass('loading');
+                     $down.find('.pullDownLabel').text('下拉刷新');
                 },600);
             }
         });
@@ -67,8 +84,10 @@
         $.getJSON('test.json',function(data,state){
             if(data && data.state==1 && state=='success'){
                 setTimeout(function(){
-                    $('#news-lists').append(data.data);
+                    $('#news-list').append(data.data);
                     myScroll.refresh();
+                    $upIcon.removeClass('loading');
+                    $up.find('.pullUpLabel').text('上拉加载更多');
                 },600);
             }
         });
@@ -77,47 +96,64 @@
     document.addEventListener('DOMContentLoaded',loaded,false);
 
     function loaded(){
-        var $down=$('#pullDown'),$up=$('#pullUp');
+        $down=$('#pullDown');
+        $up=$('#pullUp');
+        $downIcon=$down.find('.icon');
+        $upIcon=$up.find('.icon');
         pullDownEl=$down[0];
         pullDownOffset=pullDownEl.offsetHeight;
         pullUpEl=$up[0];
         pullUpOffset=pullUpEl.offsetHeight;
 
-        myScroll=new iScroll('wrapper',{
-            vScrollbar:false,
-            topOffset:pullDownOffset,
-            onRefresh:function(){
-                if($down.hasClass('loading')){
-                    $down.removeClass('loading');
-                    $down.find('.pullDownLable').text('下拉刷新...');
-                }else if($up.hasClass('loading')){
-                    $up.removeClass('loading');
-                    $down.find('.pullUpLable').text('上拉加载更多...');
-                }
-            },
-            onScrollMove:function(){
-                if(this.y>5 && !$down.hasClass('flip')){
-                    $down.addClass('flip');
-                    $down.find('.pullDownLable').text('松手开始更新');
-                }else if(this.y<(this.maxScrollY-5)&&!$up.hasClass('flip')){
-                    $up.addClass('flip');
-                    $up.find('.pullUpLable').text('松手开始更新');
-                }
-            },
-            onScrollEnd:function(){
-                if($down.hasClass('flip')){
-                    $down.addClass('loading');
-                    $down.find('.pullDownLable').text('加载中...');
+        myScroll=new IScroll('#wrapper',{probeType: 3, mouseWheel: true,vScrollbar:false});
+        myScroll.on("slideDown",function() {
+            if(this.y > 40){
+                if(!$downIcon.hasClass('loading')){
+                    $downIcon.addClass('loading');
+                    $down.find('.pullDownLabel').text('加载中...');
                     pullDownAction();
                 }
-                if($up.hasClass('flip')){
-                    $up.addClass('loading');
-                    $up.find('.pullUpLable').text('加载中...');
-                    pullUpAction();
-                }
-            },
-
+            }
         });
+
+        myScroll.on("slideUp",function(){
+            if(this.maxScrollY - this.y > 40){
+                if(!$upIcon.hasClass('loading')){
+                    $upIcon.addClass('loading');
+                    $up.find('.pullUpLabel').text('加载中...');
+                    pullUpAction();
+                   }
+                }
+        });
+
+        myScroll.on("scroll",function(){
+            var y = this.y,
+                maxY = this.maxScrollY - y,
+
+                downHasClass = $downIcon.hasClass("flip"),
+                upHasClass = $upIcon.hasClass("flip");
+            
+            if(y >= 40){
+                !downHasClass && $downIcon.addClass("flip");
+                $down.find('.pullDownLabel').text('释放刷新');
+                return;
+            }else if(y < 40 && y > 0){
+                downHasClass && $downIcon.removeClass("flip");
+                $down.find('.pullDownLabel').text('下拉刷新');
+                return "";
+            }
+            
+            if(maxY >= 40){
+                !upHasClass && $upIcon.addClass("flip");
+                 $up.find('.pullUpLabel').text('释放刷新');
+                return;
+            }else if(maxY < 40 && maxY >=0){
+                upHasClass && $upIcon.removeClass("flip");
+                $up.find('.pullUpLabel').text('上拉加载更多');
+                return;
+            }
+        });
+        
     }
 </script>
 </html>
